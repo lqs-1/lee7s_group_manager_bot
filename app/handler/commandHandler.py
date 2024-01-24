@@ -21,3 +21,13 @@ async def new_chat_members(update: Update, context: ContextTypes.DEFAULT_TYPE):
             logging.warning(f"用户 {member.username} 进入群聊")
             await context.bot.send_message(chat_id=update.effective_chat.id, text=f"@{member.username} 欢迎欢迎🎉🎉\n 关注频道 https://t.me/av_share_channel")
 
+
+
+# 自动删除机器人消息
+async def auto_delete_bot_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    try:
+        if update.channel_post.entities:
+            await context.bot.delete_message(update.effective_chat.id, update.channel_post.message_id)
+
+    except Exception as e:
+        pass
