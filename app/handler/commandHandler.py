@@ -29,7 +29,28 @@ async def new_chat_members(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def auto_delete_bot_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         if update.channel_post.entities:
-            await context.bot.delete_message(update.effective_chat.id, update.channel_post.message_id)
+            # 发起获取字典的请求
+            response = requests.get("https://nobibibi.top/back/sysDict/requestDictByParent/telegram_copy_dict")
+            response_data = response.json().get("parentDictAllSonDict")
+
+            # 不删除的互推机器人
+            ignore_delete_bot_name_list = response_data.get('ignore_delete_bot_name').split(":")
+
+            # 默认都要删除
+            flag = True
+
+            if len(ignore_delete_bot_name_list) > 0:
+
+                for ignore_delete_bot_name in ignore_delete_bot_name_list:
+                    if ignore_delete_bot_name in update.effective_message.text_html:
+                        flag = False
+            else:
+                # 删除消息
+                await context.bot.delete_message(update.effective_chat.id, update.channel_post.message_id)
+
+            if flag:
+                await context.bot.delete_message(update.effective_chat.id, update.channel_post.message_id)
+
 
     except Exception as e:
         pass
