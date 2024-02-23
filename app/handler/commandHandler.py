@@ -2,7 +2,7 @@
 import logging
 
 import requests
-from telegram import Update
+from telegram import Update, BotCommand
 from telegram.constants import ParseMode
 # ContextTypes:上下文类型
 from telegram.ext import ContextTypes
@@ -22,6 +22,30 @@ async def new_chat_members(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 continue
             logging.warning(f"用户 {member.username} 进入群聊")
             await context.bot.send_message(chat_id=update.effective_chat.id, text=f"@{member.username} 欢迎欢迎🎉🎉\n 关注频道 https://t.me/av_share_channel")
+
+
+# 清空消息
+async def clean_channel_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    channel_name = context.args[0]
+    message_id = int(context.args[1])
+
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=f"频道 {channel_name} 正在清空...")
+    # 删除消息
+    while True:
+        try:
+            message_id -= 1
+            await context.bot.delete_message(chat_id=channel_name, message_id=message_id)
+            if message_id == 0:
+                break
+        except Exception as e:
+
+            pass
+
+    await context.bot.delete_message(update.effective_chat.id, update.effective_message.id + 1)
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=f"频道 {channel_name} 已清空")
+    # while True:
+        # context.bot.delete_message(chat_id=channel_name, message_id=)
+
 
 
 
@@ -96,6 +120,13 @@ def remove_job_if_exists(name: str, context: ContextTypes.DEFAULT_TYPE) -> bool:
 # 设置定时任务时间
 async def set_timer(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """添加一个定时任务"""
+
+    # commands = [
+    #     BotCommand("start", "Start the bot"),
+    #     BotCommand("help", "Get help")
+    # ]
+    #
+    # await context.bot.set_my_commands(commands)
 
     # 发起获取字典的请求
     response = requests.get("https://nobibibi.top/back/sysDict/requestDictByParent/telegram_copy_dict")
