@@ -14,7 +14,7 @@ def create_application() -> Application:
     # logging.getLogger('sqlalchemy.engine').setLevel(logging.ERROR)
     # 设置日志
     logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s:%(message)s',
-                        level=logging.WARNING)
+                        level=logging.ERROR)
 
 
     logging.warning(f'''
